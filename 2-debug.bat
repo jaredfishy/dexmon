@@ -1,2 +1,3 @@
-java -cp bin Dexter
+cd debug
+java -cp ..\bin Dexter
 pause

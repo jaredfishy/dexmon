@@ -1,5 +1,8 @@
 *.class
 cache/
+debug/
+release/
+release_personal/
 output/
 
 # Mobile Tools for Java (J2ME)

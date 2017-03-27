@@ -16,7 +16,7 @@ class Dexter
 	private static final String window_title = "Dexter v" + version;
 	public static final String IMG_CACHE = "cache\\img";
 	
-	public static final String DEX_FILE = "DexterConfig.xml";
+	public static final String DEX_FILE = "res\\DexterConfig.xml";
 	public static final String USER_FILE = "userdata.txt";
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////

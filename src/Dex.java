@@ -285,7 +285,14 @@ class Dex
 		try
 		{
 			URL url = new URL("http://pokeapi.co/media/img/"+mon.id+".png");
-			InputStream in = new BufferedInputStream(url.openStream());
+			
+			//InputStream in = new BufferedInputStream(url.openStream());
+			
+			URLConnection urlConnection = url.openConnection();
+			urlConnection.addRequestProperty("User-Agent","Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)");
+			urlConnection.connect();
+			InputStream in = urlConnection.getInputStream();
+			
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			byte[] buf = new byte[1024];
 			int n = 0;
