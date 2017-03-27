@@ -1,3 +1,3 @@
-cd output
-jar cfm ..\Dexter.jar ..\Manifest.txt *.class
+cd bin
+jar cfm ..\output\Dexter.jar ..\Manifest.txt *.class
 pause
