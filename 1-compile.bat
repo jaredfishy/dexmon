@@ -1,2 +1,2 @@
-javac -d "output" src\*.java
+javac -d "bin" src\*.java
 pause

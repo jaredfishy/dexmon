@@ -125,190 +125,201 @@ class Dexter
 		lblResultCount = new JLabel();
 		lblResultCount.setText("Initialising...");
 		
-		final JButton btnFilters = new JButton("Show Filters");
-		btnFilters.setMargin(new Insets(0, 0, 0, 0));
-		
-		final GridBagConstraints filterPanelConstraints = new GridBagConstraints();
-		filterPanelConstraints.gridx = 0;
-		filterPanelConstraints.gridy = 1;
-		filterPanelConstraints.weightx = 100;
-		filterPanelConstraints.fill = GridBagConstraints.HORIZONTAL;
-		btnFilters.addActionListener(new ActionListener()
+		if(dex.isConfigLoaded())
 		{
-			public void actionPerformed(ActionEvent e) {
-				if(showFilters)
-				{
-					showFilters = false;
-					leftPanel.remove(filterPanel);
-					leftPanel.revalidate();
-					leftPanel.repaint();
-					btnFilters.setText("Show Filters");
-				}
-				else
-				{
-					showFilters = true;
-					leftPanel.add(filterPanel, filterPanelConstraints);
-					leftPanel.revalidate();
-					leftPanel.repaint();
-					btnFilters.setText("Hide Filters");
-				}
-			}
-		});
 		
-		
-		
-		searchPanel = new JPanel();
-		searchPanel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder("Search"), BorderFactory.createEmptyBorder(5,5,5,5)));
-		
-		searchPanel.setLayout(new BorderLayout());
-		searchPanel.add(txtSearch, BorderLayout.NORTH);
-		searchPanel.add(lblResultCount, BorderLayout.CENTER);
-		searchPanel.add(btnFilters, BorderLayout.EAST);
-		
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		// Filter Panel
-		filterPanel = new JPanel();
-		filterPanel.setLayout(new GridLayout(0,1));
-		filterPanel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder("Filters"), BorderFactory.createEmptyBorder(5,5,5,5)));
-		
-		FilterButton_SHO btnCapture = new FilterButton_SHO("Captured")
-		{
-			public void onStateChange(int state)
+			final JButton btnFilters = new JButton("Show Filters");
+			btnFilters.setMargin(new Insets(0, 0, 0, 0));
+			
+			final GridBagConstraints filterPanelConstraints = new GridBagConstraints();
+			filterPanelConstraints.gridx = 0;
+			filterPanelConstraints.gridy = 1;
+			filterPanelConstraints.weightx = 100;
+			filterPanelConstraints.fill = GridBagConstraints.HORIZONTAL;
+			btnFilters.addActionListener(new ActionListener()
 			{
-				if(filterCapturedState!=state)
-				{			
-					filterCapturedState = state;
-					DrawDex(Search());
+				public void actionPerformed(ActionEvent e) {
+					if(showFilters)
+					{
+						showFilters = false;
+						leftPanel.remove(filterPanel);
+						leftPanel.revalidate();
+						leftPanel.repaint();
+						btnFilters.setText("Show Filters");
+					}
+					else
+					{
+						showFilters = true;
+						leftPanel.add(filterPanel, filterPanelConstraints);
+						leftPanel.revalidate();
+						leftPanel.repaint();
+						btnFilters.setText("Hide Filters");
+					}
 				}
-			}
-		};
-		filterCapturedState = btnCapture.getState();
-		filterPanel.add(btnCapture);
-		
-		DexMonFilter [] filters = dex.getFilters();
-		filterState = new int[filters.length];
-		for(int i=0;i<filters.length;i++)
-		{
-			final int index = i;
-			FilterButton_SHO btn_filter = new FilterButton_SHO(filters[i].name)
+			});
+			
+			
+			
+			searchPanel = new JPanel();
+			searchPanel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder("Search"), BorderFactory.createEmptyBorder(5,5,5,5)));
+			
+			searchPanel.setLayout(new BorderLayout());
+			searchPanel.add(txtSearch, BorderLayout.NORTH);
+			searchPanel.add(lblResultCount, BorderLayout.CENTER);
+			searchPanel.add(btnFilters, BorderLayout.EAST);
+			
+			////////////////////////////////////////////////////////////////////////////////////////////////////
+			// Filter Panel
+			filterPanel = new JPanel();
+			filterPanel.setLayout(new GridLayout(0,1));
+			filterPanel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder("Filters"), BorderFactory.createEmptyBorder(5,5,5,5)));
+			
+			FilterButton_SHO btnCapture = new FilterButton_SHO("Captured")
 			{
 				public void onStateChange(int state)
 				{
-					if(filterState[index]!=state)
-					{					
-						filterState[index] = state;
+					if(filterCapturedState!=state)
+					{			
+						filterCapturedState = state;
 						DrawDex(Search());
 					}
 				}
 			};
-			filterState[i] = btn_filter.getState();
-			filterPanel.add(btn_filter);
-		}
-		
-		// holder for output
-		resultHolder = new JPanel();
-		resultHolder.setLayout(new BorderLayout());
-		
-		JScrollPane resultScroller = new JScrollPane(resultHolder,
-				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		resultScroller.getVerticalScrollBar().setUnitIncrement(16);
-		resultScroller.setBorder(new CompoundBorder(BorderFactory.createTitledBorder("Results"), BorderFactory.createEmptyBorder(5,5,5,5)));
-		
-		
-		leftPanel = new JPanel();
-		leftPanel.setLayout(new GridBagLayout());
-
-		GridBagConstraints searchPanelConstraints = new GridBagConstraints();
-		searchPanelConstraints.gridx = 0;
-		searchPanelConstraints.gridy = 0;
-		searchPanelConstraints.weightx = 100;
-		searchPanelConstraints.fill =  GridBagConstraints.HORIZONTAL;
-		leftPanel.add(searchPanel, searchPanelConstraints);
-		
-		GridBagConstraints resultScrollerConstraints = new GridBagConstraints();
-		resultScrollerConstraints.gridx=0;
-		resultScrollerConstraints.gridy=2;
-		resultScrollerConstraints.weightx = 100;
-		resultScrollerConstraints.weighty = 100;
-		resultScrollerConstraints.fill = GridBagConstraints.BOTH;
-		leftPanel.add(resultScroller, resultScrollerConstraints);		
-		
-		frame.add(leftPanel);
-		
-		
-		
-		
-		
-		// create right side view and buttons
-		
-		final JPanel rightPanel = new JPanel();
-		rightPanel.setLayout(new BorderLayout());
-		
-		statsPanel = new JPanel();
-		statsPanel.setLayout(new GridBagLayout());
-		statsPanel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder("Completion Stats"), BorderFactory.createEmptyBorder(5,5,5,5)));
-		
-		btnSave = new JButton("Save Data");
-		btnSave.setEnabled(false);
-		btnSave.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e) {
-				
-				dex.SaveUserData(USER_FILE);
-				btnSave.setEnabled(false);
+			filterCapturedState = btnCapture.getState();
+			filterPanel.add(btnCapture);
+			
+			DexMonFilter [] filters = dex.getFilters();
+			filterState = new int[filters.length];
+			for(int i=0;i<filters.length;i++)
+			{
+				final int index = i;
+				FilterButton_SHO btn_filter = new FilterButton_SHO(filters[i].name)
+				{
+					public void onStateChange(int state)
+					{
+						if(filterState[index]!=state)
+						{					
+							filterState[index] = state;
+							DrawDex(Search());
+						}
+					}
+				};
+				filterState[i] = btn_filter.getState();
+				filterPanel.add(btn_filter);
 			}
-		});
-		GridBagConstraints btnSaveConstraints = new GridBagConstraints();
-		btnSaveConstraints.gridx=2;
-		btnSaveConstraints.gridy=0;
-		btnSaveConstraints.gridheight=2;
-		statsPanel.add(btnSave, btnSaveConstraints);
-		
-		
-		GridBagConstraints lblCompletion1ConstraintsLabel =  new GridBagConstraints();
-		lblCompletion1ConstraintsLabel.anchor = GridBagConstraints.NORTHWEST;
-		lblCompletion1ConstraintsLabel.gridx = 0;
-		lblCompletion1ConstraintsLabel.gridy = 0;
-		statsPanel.add(new JLabel("Completion: "), lblCompletion1ConstraintsLabel);
-		
-		
-		lblCompletion1 = new JLabelX("???");
-		lblCompletion1.setBold(false);
-		GridBagConstraints lblCompletion1Constraints =  new GridBagConstraints();
-		lblCompletion1Constraints.anchor = GridBagConstraints.NORTHWEST;
-		lblCompletion1Constraints.gridx = 1;
-		lblCompletion1Constraints.gridy = 0;
-		lblCompletion1Constraints.weightx = 100;
-		statsPanel.add(lblCompletion1, lblCompletion1Constraints);	
+			
+			// holder for output
+			resultHolder = new JPanel();
+			resultHolder.setLayout(new BorderLayout());
+			
+			JScrollPane resultScroller = new JScrollPane(resultHolder,
+					JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+					JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			resultScroller.getVerticalScrollBar().setUnitIncrement(16);
+			resultScroller.setBorder(new CompoundBorder(BorderFactory.createTitledBorder("Results"), BorderFactory.createEmptyBorder(5,5,5,5)));
+			
+			
+			leftPanel = new JPanel();
+			leftPanel.setLayout(new GridBagLayout());
 
-		GridBagConstraints lblCompletion2ConstraintsLabel =  new GridBagConstraints();
-		lblCompletion2ConstraintsLabel.anchor = GridBagConstraints.NORTHWEST;
-		lblCompletion2ConstraintsLabel.gridx = 0;
-		lblCompletion2ConstraintsLabel.gridy = 1;
-		statsPanel.add(new JLabel("Results: "), lblCompletion2ConstraintsLabel);		
-		
-		lblCompletion2 = new JLabelX("???");
-		lblCompletion2.setBold(false);
-		GridBagConstraints lblCompletion2Constraints =  new GridBagConstraints();
-		lblCompletion2Constraints.anchor = GridBagConstraints.NORTHWEST;
-		lblCompletion2Constraints.gridx = 1;
-		lblCompletion2Constraints.gridy = 1;
-		lblCompletion2Constraints.weightx = 100;
-		statsPanel.add(lblCompletion2, lblCompletion2Constraints);
-		
-		
-		fullViewPanel = new JPanel();
-		fullViewPanel.setLayout(new BorderLayout());
-		fullViewPanel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder("Detailed View"), BorderFactory.createEmptyBorder(5,5,5,5)));
-		
-		rightPanel.add(statsPanel, BorderLayout.NORTH);
-		rightPanel.add(fullViewPanel, BorderLayout.CENTER);
-		
-		frame.add(rightPanel);
-		
-        //frame.pack(); // <-- auto resizes entire frame
-        frame.setVisible(true);
+			GridBagConstraints searchPanelConstraints = new GridBagConstraints();
+			searchPanelConstraints.gridx = 0;
+			searchPanelConstraints.gridy = 0;
+			searchPanelConstraints.weightx = 100;
+			searchPanelConstraints.fill =  GridBagConstraints.HORIZONTAL;
+			leftPanel.add(searchPanel, searchPanelConstraints);
+			
+			GridBagConstraints resultScrollerConstraints = new GridBagConstraints();
+			resultScrollerConstraints.gridx=0;
+			resultScrollerConstraints.gridy=2;
+			resultScrollerConstraints.weightx = 100;
+			resultScrollerConstraints.weighty = 100;
+			resultScrollerConstraints.fill = GridBagConstraints.BOTH;
+			leftPanel.add(resultScroller, resultScrollerConstraints);		
+			
+			frame.add(leftPanel);
+			
+			
+			
+			
+			
+			// create right side view and buttons
+			
+			final JPanel rightPanel = new JPanel();
+			rightPanel.setLayout(new BorderLayout());
+			
+			statsPanel = new JPanel();
+			statsPanel.setLayout(new GridBagLayout());
+			statsPanel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder("Completion Stats"), BorderFactory.createEmptyBorder(5,5,5,5)));
+			
+			btnSave = new JButton("Save Data");
+			btnSave.setEnabled(false);
+			btnSave.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e) {
+					
+					dex.SaveUserData(USER_FILE);
+					btnSave.setEnabled(false);
+				}
+			});
+			GridBagConstraints btnSaveConstraints = new GridBagConstraints();
+			btnSaveConstraints.gridx=2;
+			btnSaveConstraints.gridy=0;
+			btnSaveConstraints.gridheight=2;
+			statsPanel.add(btnSave, btnSaveConstraints);
+			
+			
+			GridBagConstraints lblCompletion1ConstraintsLabel =  new GridBagConstraints();
+			lblCompletion1ConstraintsLabel.anchor = GridBagConstraints.NORTHWEST;
+			lblCompletion1ConstraintsLabel.gridx = 0;
+			lblCompletion1ConstraintsLabel.gridy = 0;
+			statsPanel.add(new JLabel("Completion: "), lblCompletion1ConstraintsLabel);
+			
+			
+			lblCompletion1 = new JLabelX("???");
+			lblCompletion1.setBold(false);
+			GridBagConstraints lblCompletion1Constraints =  new GridBagConstraints();
+			lblCompletion1Constraints.anchor = GridBagConstraints.NORTHWEST;
+			lblCompletion1Constraints.gridx = 1;
+			lblCompletion1Constraints.gridy = 0;
+			lblCompletion1Constraints.weightx = 100;
+			statsPanel.add(lblCompletion1, lblCompletion1Constraints);	
+
+			GridBagConstraints lblCompletion2ConstraintsLabel =  new GridBagConstraints();
+			lblCompletion2ConstraintsLabel.anchor = GridBagConstraints.NORTHWEST;
+			lblCompletion2ConstraintsLabel.gridx = 0;
+			lblCompletion2ConstraintsLabel.gridy = 1;
+			statsPanel.add(new JLabel("Results: "), lblCompletion2ConstraintsLabel);		
+			
+			lblCompletion2 = new JLabelX("???");
+			lblCompletion2.setBold(false);
+			GridBagConstraints lblCompletion2Constraints =  new GridBagConstraints();
+			lblCompletion2Constraints.anchor = GridBagConstraints.NORTHWEST;
+			lblCompletion2Constraints.gridx = 1;
+			lblCompletion2Constraints.gridy = 1;
+			lblCompletion2Constraints.weightx = 100;
+			statsPanel.add(lblCompletion2, lblCompletion2Constraints);
+			
+			
+			fullViewPanel = new JPanel();
+			fullViewPanel.setLayout(new BorderLayout());
+			fullViewPanel.setBorder(new CompoundBorder(BorderFactory.createTitledBorder("Detailed View"), BorderFactory.createEmptyBorder(5,5,5,5)));
+			
+			rightPanel.add(statsPanel, BorderLayout.NORTH);
+			rightPanel.add(fullViewPanel, BorderLayout.CENTER);
+			
+			frame.add(rightPanel);
+			
+		}
+		else
+		{
+			
+			JLabel lblResultCount = new JLabel();
+			lblResultCount.setText("No config file found. Expected \"DexterConfig.xml\" to exist.");
+			frame.add(lblResultCount);
+		}
+		//frame.pack(); // <-- auto resizes entire frame
+		frame.setVisible(true);
     }
 	
 	private DexResult Search()

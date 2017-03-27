@@ -21,6 +21,11 @@ class Dex
 	private DexMonFilter [] filters;
 	private Vector<Integer> user_data;
 	private boolean user_data_changed = false;
+	private boolean dex_config_loaded = false;
+	public boolean isConfigLoaded()
+	{
+		return dex_config_loaded;
+	}
 	
 	public int dex_count = 0;
 	public int user_count_these = 0; // how many of the currently loaded dex the user has
@@ -43,8 +48,18 @@ class Dex
 	
 	public Dex(String dex_file, String user_file)
 	{
-		LoadDex(dex_file);
-		LoadUserFile(user_file);
+		try
+		{
+			dex_config_loaded = LoadDex(dex_file);
+			if(dex_config_loaded)
+			{
+				LoadUserFile(user_file);
+			}
+		}
+		catch(Exception err)
+		{
+			System.out.println("Error:" + err.toString());
+		}
 	}
 	
 	public DexMonFilter [] getFilters()
@@ -129,11 +144,15 @@ class Dex
 		}
 		return -1;
 	}
-	private void LoadDex(String filepath)
+	private boolean LoadDex(String filepath)
 	{
 		try
 		{
 			File fXmlFile = new File(filepath);
+			if(!fXmlFile.exists())
+			{
+				return false;
+			}
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
@@ -173,10 +192,13 @@ class Dex
 					dex[i] = DexMon.parse(nNodeMon, filters);
 				}
 			}
+			
+			return true;
 		}
 		catch (Exception err)
 		{
 			err.printStackTrace();
+			return false;
 		}
 	}
 	
